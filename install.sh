@@ -29,3 +29,26 @@ echo "AGENT_ID=$AGENT_ID" > .env
 nohup python3 agent.py > agent.log 2>&1 &
 
 echo "✅ Kurulum tamamlandı. Agent arka planda çalışıyor."
+
+# Systemd servis dosyası oluştur
+cat <<EOF > /etc/systemd/system/sunucumon-agent.service
+[Unit]
+Description=Sunucumon Monitoring Agent
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/sunucumon-agent/agent.py
+WorkingDirectory=/opt/sunucumon-agent/
+StandardOutput=file:/var/log/sunucumon-agent.log
+StandardError=file:/var/log/sunucumon-agent-error.log
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Servisi başlat ve etkinleştir
+systemctl daemon-reexec
+systemctl daemon-reload
+systemctl enable sunucumon-agent
+systemctl start sunucumon-agent
