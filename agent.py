@@ -1,3 +1,10 @@
+# Log dosyasını yapılandır
+logging.basicConfig(
+    filename='/var/log/sunucumon-agent.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
 import logging
 import time
 import requests
@@ -84,4 +91,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
