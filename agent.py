@@ -1,3 +1,8 @@
+import logging
+import time
+import requests
+from requests.exceptions import RequestException
+
 import os
 import json
 import time
@@ -79,3 +84,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
