@@ -46,7 +46,8 @@ def register(agent_id, mac):
         "hostname": get_hostname()
     }
     try:
-        r = requests.post(API_URL, json=data, timeout=10)
+        r = send_data_with_retry(api_url, headers, data)
+
         if r.status_code == 200:
             return r.json()
     except:
@@ -83,7 +84,7 @@ def main():
         }
 
         try:
-            requests.post("https://api.sunucumon.com/metrics", json=payload, headers=headers)
+            send_data_with_retry(api_url, headers, data)
         except:
             pass
 
@@ -91,5 +92,25 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def send_data_with_retry(api_url, headers, payload, max_retries=5, delay=5):
+    for attempt in range(1, max_retries + 1):
+        try:
+            response = send_data_with_retry(api_url, headers, data)
+            if response.status_code == 200:
+                logging.info("Veri başarıyla gönderildi.")
+                return True
+            else:
+                logging.warning(f"Sunucu hatası ({response.status_code}): {response.text}")
+        except RequestException as e:
+            logging.error(f"Bağlantı hatası: {e}")
+        
+        logging.info(f"{attempt}. deneme başarısız. {delay} saniye sonra tekrar deneniyor...")
+        time.sleep(delay)
+    
+    logging.critical("Maksimum tekrar sayısına ulaşıldı, veri gönderilemedi.")
+    return False
+
 
 
