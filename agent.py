@@ -6,7 +6,7 @@ from requests.exceptions import RequestException
 import os
 import json
 import psutil
-from utils import get_mac, get_hostname
+from utils import get_mac, get_hostname, encrypt_aes, decrypt_aes
 
 API_REGISTER_URL = "https://api.sunucumon.com/register"
 API_METRICS_URL = "https://api.sunucumon.com/metrics"
@@ -91,14 +91,29 @@ def main():
             return
         mac = get_mac()
         result = register(agent_id, mac)
-        if not result or "apikey" not in result:
-            logging.critical("API Key alınamadı, çıkılıyor.")
+        if not result or "apikey" not in result or "secretkey" not in result:
+            logging.critical("API Key veya Secret Key alınamadı, çıkılıyor.")
             return
+
+        # AES şifreleme için agent_id'yi kullanıyoruz
+        secret_encrypt_key = agent_id
+
+        # Secret key'i şifrele
+        encrypted_secret = encrypt_aes(result["secretkey"], secret_encrypt_key)
+        result["secretkey"] = encrypted_secret
+
         save_config(result)
         config = result
 
     apikey = config["apikey"]
-    secret = config["secretkey"]  # İleride AES şifreleme ile değişecek
+    secret_encrypt_key = get_agent_id()  # Şifre çözmek için agent_id kullanıyoruz
+    encrypted_secret = config["secretkey"]
+    try:
+        secret = decrypt_aes(encrypted_secret, secret_encrypt_key)
+    except Exception as e:
+        logging.critical(f"Secret key decrypt hatası: {e}")
+        return
+
     interval = config.get("interval", 5)
 
     headers = {
