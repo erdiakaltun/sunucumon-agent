@@ -8,4 +8,5 @@ Linux sunucuların CPU, RAM, Disk gibi sistem verilerini izlemek için hafif age
 2. Aşağıdaki komutu terminalde çalıştırın:
 
 ```bash
-curl -s https://raw.githubusercontent.com/kullanici/sunucumon-agent/main/install.sh | bash -s -- AGENT_ID
+curl -s https://raw.githubusercontent.com/erdiakaltun/sunucumon-agent/main/install.sh | bash -s -- AGENT_ID
+
