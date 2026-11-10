@@ -1,12 +1,23 @@
 # SunucuMon Agent
 
-Linux sunucuların CPU, RAM, Disk gibi sistem verilerini izlemek için hafif agent uygulaması.
+Linux sunucularında CPU, RAM ve disk kullanımını izleyen hafif agent.
 
 ## Kurulum
 
-1. Web panelden `agent_id` alın
-2. Aşağıdaki komutu terminalde çalıştırın:
+1. Web panelinden agent ID'nizi alın.
+2. Root yetkisi olan bir terminalde çalıştırın:
 
 ```bash
-curl -s https://raw.githubusercontent.com/erdiakaltun/sunucumon-agent/main/install.sh | bash -s -- AGENT_ID
+curl -fsSL https://raw.githubusercontent.com/erdiakaltun/sunucumon-agent/main/install.sh | sudo bash -s -- AGENT_ID
+```
 
+Agent ID yalnızca harf, rakam, alt çizgi ve tire içerebilir. Kurulum Python bağımlılıklarını sistem Python'una değil, `/opt/sunucumon-agent/.venv` sanal ortamına yükler ve systemd servisini bu ortamdan başlatır.
+
+## Servis
+
+```bash
+sudo systemctl status sunucumon-agent
+sudo systemctl restart sunucumon-agent
+```
+
+Loglar `/var/log/sunucumon-agent.log` ve `/var/log/sunucumon-agent-error.log` dosyalarına yazılır.
